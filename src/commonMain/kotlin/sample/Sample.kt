@@ -7,36 +7,51 @@ data class Snack(
     val name: String
 )
 data class User(
+    val ID: Int,
     val name: String,
     var balance: Int
 )
-val InitialStore = mutableListOf<Snack>(
+
+val InitialSnackStore = mutableListOf<Snack>(
     Snack(0,1,10, "Mars"),
     Snack(1,1,10, "Twix"),
     Snack(2,2,10, "Bounty")
 )
 
-var Store = InitialStore
-var Fred = User("Fred", 30)
+val InitialUserStore = mutableListOf<User>(
+    User(0,"Fred", 20),
+    User(1,"Bert", 30),
+    User(2,"Henk", 25)
+)
 
+var snackStore = InitialSnackStore
+var userStore = InitialUserStore
+var selectedUser: User = userStore[0]
+
+// Retrieving data
 fun getsnackIDByName(snackName: String) = when (snackName) {
         "Mars" -> 0
         "Twix" -> 1
         "Bounty" -> 2
         else -> "No Snack in inventory with the snackname : $snackName"
     }
-fun getSnackNameByID(snackID: Int) = Store[snackID].name
-fun getSnackPriceByID(snackID: Int) = Store[snackID].price
-fun getSnackStockByID(snackID: Int) = Store[snackID].stock
+fun getSnackNameByID(snackID: Int) = snackStore[snackID].name
+fun getSnackPriceByID(snackID: Int) = snackStore[snackID].price
+fun getSnackStockByID(snackID: Int) = snackStore[snackID].stock
 
-fun refillSnackStock(snackID: Int, refill: Int): Int { Store[snackID].stock += refill ; return Store[snackID].stock}
-fun buySnackByID(user: User, snackID: Int): String  {
-    if(getSnackStockByID(snackID) <= 0) return "Sorry, there are no ${Store[snackID].name} left in stock."
-    if(user.balance > Store[snackID].price) executeTransaction(user, snackID)
-    else return "Please Top-Up your balance of €${user.balance} to buy this €${Store[snackID].price} snack."
-    return "You've succesfully bought a ${Store[snackID].name}. Your remaining balance becomes €${user.balance}"
+// Manipulating snacks
+fun refillSnackStock(snackID: Int, refill: Int): Int { snackStore[snackID].stock += refill ; return snackStore[snackID].stock}
+fun buySnackByID(userID: Int, snackID: Int): String  {
+    val user = userStore[userID]
+    val snack = snackStore[snackID]
+    if(getSnackStockByID(snackID) <= 0) return "Sorry, there are no ${snack.name} left in stock."
+    if(user.balance >= snack.price) executeTransaction(userID, snackID)
+    else return "Please Top-Up your balance of €${user.balance} to buy this €${snack.price} snack."
+    return "You've succesfully bought a ${snack.name}. Your remaining balance becomes €${user.balance}"
+}
+fun executeTransaction(userID: Int, snackID: Int) {
+    userStore[userID].balance -= snackStore[snackID].price ; --snackStore[snackID].stock
 }
 
-fun executeTransaction(user: User, snackID: Int) {
-    user.balance -= Store[snackID].price ; --Store[snackID].stock
-}
+// Manipulating users
+
