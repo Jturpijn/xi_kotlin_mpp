@@ -4,6 +4,7 @@ import kotlin.browser.*
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.*
+import kotlin.dom.appendText
 
 val topUpButton = document.create.button {
     +"Top up Balance with 10"; onClickFunction = { _ ->
@@ -11,6 +12,10 @@ val topUpButton = document.create.button {
     document.getElementById("ktor-response")?.textContent =
         "You've succesfully topped up your balance. Your new balance is €${selectedUser.balance}"
 }
+}
+
+fun log(message: String) {
+    document.getElementById("log")!!.appendChild(document.create.div{p { +message }})
 }
 
 fun main() {
@@ -55,6 +60,7 @@ fun main() {
         }
         }
     }
+
 
     document.addEventListener("DOMContentLoaded", {
         document.getElementById("users")!!.appendChild(userButtons)

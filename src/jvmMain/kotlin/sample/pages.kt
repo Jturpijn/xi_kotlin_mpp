@@ -25,6 +25,11 @@ class VendingMachineTemplate: Template<HTML> {
                 id = "ktor-response"
                 + " "
             }
+
+            div {
+                id = "log"
+                + "Log :   "
+            }
             script(src = "/static/xi_kotlin.js") {}
         }
     }

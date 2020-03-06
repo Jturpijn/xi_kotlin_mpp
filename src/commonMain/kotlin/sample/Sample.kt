@@ -54,4 +54,3 @@ fun executeTransaction(userID: Int, snackID: Int) {
 }
 
 // Manipulating users
-
