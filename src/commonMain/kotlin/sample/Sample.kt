@@ -1,8 +1,6 @@
 package sample
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 data class Snack(
     val ID: Int,
@@ -71,9 +69,8 @@ fun runSaga(action: Action, user: User, snack: Snack):Any = when (action) {
     Action.GetSnackByID -> getSnackNameByID(snack.ID)
     Action.BuySnackByID -> buySnackByID(user.ID, snack.ID)
 }
-suspend fun rootSaga(action: Action, user: User, snack: Snack) =
-    withContext(Dispatchers.Default) {
+suspend fun rootSaga(action: Action, user: User, snack: Snack) = coroutineScope {
         println("this is $coroutineContext")
-        delay(1000)
-        runSaga(action, user, snack)
+        val response = async { runSaga(action, user, snack) }
+        response.await()
     }
