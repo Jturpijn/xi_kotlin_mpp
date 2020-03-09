@@ -1,5 +1,9 @@
 package sample
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+
 data class Snack(
     val ID: Int,
     var price: Int,
@@ -12,6 +16,13 @@ data class User(
     var balance: Int
 )
 
+enum class Action() {
+    GetSnackStore,
+    GetUserStore,
+    GetSnackByName,
+    GetSnackByID,
+    BuySnackByID
+}
 val InitialSnackStore = mutableListOf<Snack>(
     Snack(0,1,10, "Mars"),
     Snack(1,1,10, "Twix"),
@@ -29,7 +40,7 @@ var userStore = InitialUserStore
 var selectedUser: User = userStore[0]
 
 // Retrieving data
-fun getsnackIDByName(snackName: String) = when (snackName) {
+fun getsnackIDByName(snackName: String):Any = when (snackName) {
         "Mars" -> 0
         "Twix" -> 1
         "Bounty" -> 2
@@ -53,4 +64,16 @@ fun executeTransaction(userID: Int, snackID: Int) {
     userStore[userID].balance -= snackStore[snackID].price ; --snackStore[snackID].stock
 }
 
-// Manipulating users
+fun runSaga(action: Action, user: User, snack: Snack):Any = when (action) {
+    Action.GetSnackStore -> snackStore
+    Action.GetUserStore -> userStore
+    Action.GetSnackByName -> getsnackIDByName(snack.name)
+    Action.GetSnackByID -> getSnackNameByID(snack.ID)
+    Action.BuySnackByID -> buySnackByID(user.ID, snack.ID)
+}
+suspend fun rootSaga(action: Action, user: User, snack: Snack) =
+    withContext(Dispatchers.Default) {
+        println("this is $coroutineContext")
+        delay(1000)
+        runSaga(action, user, snack)
+    }

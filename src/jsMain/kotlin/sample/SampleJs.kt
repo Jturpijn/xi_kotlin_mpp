@@ -1,10 +1,11 @@
 package sample
 
+import kotlinx.coroutines.*
 import kotlin.browser.*
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.*
-import kotlin.dom.appendText
+import kotlin.js.Promise
 
 val topUpButton = document.create.button {
     +"Top up Balance with 10"; onClickFunction = { _ ->
@@ -15,7 +16,11 @@ val topUpButton = document.create.button {
 }
 
 fun log(message: String) {
-    document.getElementById("log")!!.appendChild(document.create.div{p { +message }})
+    document.getElementById("log")!!.appendChild(document.create.div { p { +message } })
+}
+
+fun getAsync(action: Action, user: User, snack: Snack): Promise<Any> = GlobalScope.promise {
+    rootSaga(action, user, snack)
 }
 
 fun main() {
@@ -24,7 +29,8 @@ fun main() {
             button {
                 +"select user: ${user.name}"; onClickFunction = { _ ->
                 selectedUser = user
-                document.getElementById("selected-user")?.textContent = "Selected user : ${user.name} with balance : €${user.balance}"
+                document.getElementById("selected-user")?.textContent =
+                    "Selected user : ${user.name} with balance : €${user.balance}"
             }
             }
         }
@@ -33,8 +39,9 @@ fun main() {
         for (snack in snackStore) {
             button {
                 +"buy a ${snack.name}"; onClickFunction = { _ ->
-                document.getElementById("ktor-response")?.textContent =
-                    "${buySnackByID(selectedUser.ID, snack.ID)}!"
+                getAsync(Action.BuySnackByID, selectedUser, snack).then {
+                    document.getElementById("ktor-response")?.textContent = "Results $it"
+                }
             }
             }
         }
@@ -47,8 +54,8 @@ fun main() {
         }
         button {
             +"Show Balance"; onClickFunction = { _ ->
-            document.getElementById("ktor-response")?.textContent =
-                "Hello ${selectedUser.name}, your current balance is €${selectedUser.balance}"
+            document.getElementById("ktor-response")?.textContent
+            "Hello ${selectedUser.name}, your current balance is €${selectedUser.balance}"
             document.getElementById("ktor-response")!!.appendChild(topUpButton)
         }
         }
@@ -60,7 +67,6 @@ fun main() {
         }
         }
     }
-
 
     document.addEventListener("DOMContentLoaded", {
         document.getElementById("users")!!.appendChild(userButtons)
