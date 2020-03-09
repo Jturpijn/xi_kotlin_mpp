@@ -69,8 +69,8 @@ fun runSaga(action: Action, user: User, snack: Snack):Any = when (action) {
     Action.GetSnackByID -> getSnackNameByID(snack.ID)
     Action.BuySnackByID -> buySnackByID(user.ID, snack.ID)
 }
-suspend fun rootSaga(action: Action, user: User, snack: Snack) = coroutineScope {
-        println("this is $coroutineContext")
+suspend fun rootSaga(action: Action, user: User, snack: Snack, delay: Int) = coroutineScope {
+        delay((delay * 1000).toLong())
         val response = async { runSaga(action, user, snack) }
         response.await()
     }

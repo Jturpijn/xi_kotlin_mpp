@@ -6,6 +6,7 @@ import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.*
 import kotlin.js.Promise
+import kotlin.random.Random
 
 val topUpButton = document.create.button {
     +"Top up Balance with 10"; onClickFunction = { _ ->
@@ -14,13 +15,12 @@ val topUpButton = document.create.button {
         "You've succesfully topped up your balance. Your new balance is €${selectedUser.balance}"
 }
 }
-
 fun log(message: String) {
     document.getElementById("log")!!.appendChild(document.create.div { p { +message } })
 }
 
 fun getAsync(action: Action, user: User, snack: Snack): Promise<Any> = GlobalScope.promise {
-    rootSaga(action, user, snack)
+    rootSaga(action, user, snack, Random.nextInt(1,9))
 }
 
 fun main() {
@@ -36,12 +36,17 @@ fun main() {
         }
     }
     val snackButtons = document.create.div {
+        var count = 0
         for (snack in snackStore) {
             button {
                 +"buy a ${snack.name}"; onClickFunction = { _ ->
+                val jeboi = "$count${snack.name}"
+                log("clicked $jeboi")
                 getAsync(Action.BuySnackByID, selectedUser, snack).then {
-                    document.getElementById("ktor-response")?.textContent = "Results $it"
+                    log("resolved $jeboi for ${snack.name} result : $it")
+                    document.getElementById("ktor-response")?.textContent = "$it"
                 }
+                count++
             }
             }
         }
