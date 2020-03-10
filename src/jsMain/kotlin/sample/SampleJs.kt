@@ -5,32 +5,46 @@ import kotlin.browser.*
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.*
+import org.w3c.dom.Text
+import org.w3c.dom.get
+import kotlin.dom.appendElement
+import kotlin.dom.appendText
+import kotlin.js.Date
 import kotlin.js.Promise
 import kotlin.random.Random
 
 val topUpButton = document.create.button {
     +"Top up Balance with 10"; onClickFunction = { _ ->
     selectedUser.balance += 10
-    document.getElementById("ktor-response")?.textContent =
-        "You've succesfully topped up your balance. Your new balance is €${selectedUser.balance}"
+    log("Succesfully topped up ${selectedUser.name}'s balance. Balance is now €${selectedUser.balance}")
 }
 }
+
+val logs = mutableListOf<String>()
 fun log(message: String) {
-    document.getElementById("log")!!.appendChild(document.create.div { p { +message } })
+    logs.add(message)
+    if(document.getElementById("logs")!!.hasChildNodes()) {
+        document.getElementById("logs")!!.outerHTML = " "
+        document.getElementById("container")!!.appendChild(document.create.div { id = "logs"})
+    }
+    for(log in logs.asReversed()) {
+        document.getElementById("logs")!!.appendChild(document.create.p { id= "log"
+                                                                                        +log })
+    }
 }
 
 fun getAsync(action: Action, user: User, snack: Snack): Promise<Any> = GlobalScope.promise {
-    rootSaga(action, user, snack, Random.nextInt(1,9))
+    rootSaga(action, user, snack, Random.nextInt(1, 9))
 }
 
 fun main() {
     val userButtons = document.create.div {
+        document.getElementById("ktor-request")!!.appendChild(topUpButton)
         for (user in userStore) {
             button {
                 +"select user: ${user.name}"; onClickFunction = { _ ->
                 selectedUser = user
-                document.getElementById("selected-user")?.textContent =
-                    "Selected user : ${user.name} with balance : €${user.balance}"
+                log("Selected user : ${user.name} with balance : €${user.balance}")
             }
             }
         }
@@ -40,13 +54,13 @@ fun main() {
         for (snack in snackStore) {
             button {
                 +"buy a ${snack.name}"; onClickFunction = { _ ->
-                val jeboi = "$count${snack.name}"
-                log("clicked $jeboi")
+                val named = "${count++}${snack.name}"
+                log("clicked $named")
                 getAsync(Action.BuySnackByID, selectedUser, snack).then {
-                    log("resolved $jeboi for ${snack.name} result : $it")
-                    document.getElementById("ktor-response")?.textContent = "$it"
+                    log("resolved $named for ${snack.name} result : $it")
+                }.catch {
+                    log("$it")
                 }
-                count++
             }
             }
         }
@@ -54,20 +68,19 @@ fun main() {
     val actionButtons = document.create.div {
         button {
             +"Show Stock"; onClickFunction = { _ ->
-            document.getElementById("ktor-response")?.textContent = "the store : $snackStore"
+            log("the store : $snackStore")
         }
         }
         button {
             +"Show Balance"; onClickFunction = { _ ->
-            document.getElementById("ktor-response")?.textContent
-            "Hello ${selectedUser.name}, your current balance is €${selectedUser.balance}"
-            document.getElementById("ktor-response")!!.appendChild(topUpButton)
+            log("Hello ${selectedUser.name}, your current balance is €${selectedUser.balance}")
         }
         }
         button {
             +"Refill all snacks"; onClickFunction = { _ ->
             for (snack in snackStore) {
-                document.getElementById("ktor-response")?.textContent = "the store : ${refillSnackStock(snack.ID, 10)}"
+                refillSnackStock(snack.ID, 10)
+                log("Succesfully restocked ${snack.ID} snacks by 10")
             }
         }
         }
