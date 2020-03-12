@@ -1,9 +1,6 @@
 package sample
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.selects.select
 import kotlin.browser.*
 import kotlinx.html.*
 import kotlinx.html.dom.create
@@ -30,18 +27,14 @@ fun actionWatcher() = GlobalScope.launch {
     while (true) {
         for (action in reducerChannel) {
             log("dispatched $action")
-            buySnack(action)
+            if(action.type == ActionType.buy) launch { buySnack(action.unsafeCast<snackAction>()) }
         }
     }
 }
 
-fun dispatch(action: String) = GlobalScope.launch {
+fun dispatch(action: Action) = GlobalScope.launch {
     log("dispatching $action")
-    when (action) {
-        "buyMars" -> reducerChannel.send(Action.buyMars)
-        "buyTwix" -> reducerChannel.send(Action.buyTwix)
-        "buyBounty" -> reducerChannel.send(Action.buyBounty)
-    }
+    reducerChannel.send(action)
 }
 
 fun main() {
@@ -67,9 +60,9 @@ fun main() {
     val snackButtons = document.create.div {
         for (snack in snackStore.snacks) {
             button {
-                +"buy a ${snack.name}"; onClickFunction = { _ ->
                 id = "${snack.ID}"
-                dispatch("buy${snack.name}")
+                +"buy a ${snack.name}"; onClickFunction = { _ ->
+                dispatch(snackAction(ActionType.buy, snack))
             }
             }
         }
@@ -87,7 +80,7 @@ fun main() {
         }
         button {
             +"Refill all snacks"; onClickFunction = { _ ->
-            dispatch("refillSnacks")
+            dispatch(userAction(ActionType.refill))
         }
         }
     }

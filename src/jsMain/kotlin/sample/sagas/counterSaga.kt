@@ -6,27 +6,15 @@ import sample.*
 import kotlin.js.Date
 import kotlin.random.Random
 
-suspend fun buySnack(action: Action) {
+suspend fun buySnack(action: snackAction) {
     delay((Random.nextLong(1, 9) * 1000))
     snackStore.transactions += 1
-    when (action) {
-        Action.buyMars -> try {
-            executeTransaction(selectedUser.ID, 0);
+    when (action.type) {
+         ActionType.buy -> try {
+            executeTransaction(selectedUser.ID, action.snack.ID);
             log("${Date.now()} finished $action result : $snackStore")
         } catch (e: Exception) {
             log("Unresolved: ${e.message}")
-        }
-        Action.buyTwix -> try {
-            executeTransaction(selectedUser.ID, 1);
-            log("${Date.now()} finished $action result : $snackStore")
-        } catch (e: Exception) {
-            log("Exception: ${e.message}")
-        }
-        Action.buyBounty -> try {
-            executeTransaction(selectedUser.ID, 2);
-            log("${Date.now()} finished $action result : $snackStore")
-        } catch (e: Exception) {
-            log("Exception: ${e.message}")
         }
         else -> snackStore
     }

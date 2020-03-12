@@ -14,11 +14,19 @@ data class User(
     val name: String,
     var balance: Int
 )
-enum class Action() {
-    buyMars,
-    buyTwix,
-    buyBounty
+interface Action {
+    val type: ActionType
 }
+data class snackAction(
+    override val type: ActionType,
+    val snack: Snack
+): Action
+data class userAction(
+    override val type: ActionType,
+    val user: User = selectedUser
+): Action
+
+enum class ActionType { buy, refill }
 
 // Stores
 data class SnackStore (
