@@ -19,7 +19,8 @@ interface Action {
 }
 data class snackAction(
     override val type: ActionType,
-    val snack: Snack
+    val snack: Snack,
+    var snackIdentifier: String
 ): Action
 data class userAction(
     override val type: ActionType,

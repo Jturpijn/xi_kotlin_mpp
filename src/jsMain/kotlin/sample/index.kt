@@ -59,11 +59,12 @@ fun main() {
         }
     }
     val snackButtons = document.create.div {
+        var counter= 0
         for (snack in snackStore.snacks) {
             button {
                 id = "${snack.ID}"
                 +"buy a ${snack.name}"; onClickFunction = { _ ->
-                dispatch(snackAction(ActionType.buy, snack))
+                dispatch(snackAction(ActionType.buy, snack, "${counter++}${snack.name}"))
             }
             }
         }
@@ -72,7 +73,7 @@ fun main() {
         button {
             +"Show Stock"; onClickFunction = { _ ->
             for(snack in snackStore.snacks.asReversed()) {
-                log("ID: ${snack.ID} | ${snack.name} | #${snack.stock} | €${snack.price}")
+                log("ID: ${snack.ID} | ${snack.name} \t | #${snack.stock} | €${snack.price}")
             }
         }
         }

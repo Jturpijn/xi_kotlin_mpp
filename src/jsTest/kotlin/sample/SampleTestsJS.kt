@@ -6,5 +6,6 @@ import kotlin.test.assertTrue
 class SampleTestsJS {
     @Test
     fun testHello() {
+
     }
 }

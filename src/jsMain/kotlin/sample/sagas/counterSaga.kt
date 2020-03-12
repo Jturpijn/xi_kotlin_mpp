@@ -12,7 +12,7 @@ suspend fun buySnack(action: snackAction) {
     when (action.type) {
          ActionType.buy -> try {
             executeTransaction(selectedUser.ID, action.snack.ID);
-            log("${Date.now()} finished $action result : $snackStore")
+            log("${Date.now()} finished $action result : ${action.snackIdentifier}")
         } catch (e: Exception) {
             log("Unresolved: ${e.message}")
         }
