@@ -45,37 +45,37 @@ fun main() {
             get("/getStore") {
                 call.respond(snackStore)
             }
-            // Get the stock of a snack
-            post("/checkSnack") {
-                val payload = call.receive<Post>()
-                call.respond(getSnackStockByID(payload.snackID))
-            }
-            // Get the name of a snack
-            post("/getSnackName") {
-                val payload = call.receive<Post>()
-                call.respond(getSnackNameByID(payload.snackID))
-            }
-            // Get the price of a snack
-            post("/getSnackPrice") {
-                val payload = call.receive<Post>()
-                call.respond(getSnackPriceByID(payload.snackID))
-            }
-            // Get snackID by name
-            post("/getSnackID") {
-                val payload = call.receive<Post>()
-                call.respond(getsnackIDByName(payload.name))
-            }
-
-            // Buy a snack (reduct 1 from snackstock)
-            post("/buySnack") {
-                val payload = call.receive<Buy>()
-                call.respond(buySnackByID(payload.userID, payload.snackID))
-            }
-            // Refill the stofk of a snack
-            post("/refillSnackStock") {
-                val payload = call.receive<Refill>()
-                call.respond(refillSnackStock(payload.snackID, payload.refill))
-            }
+//            // Get the stock of a snack
+//            post("/checkSnack") {
+//                val payload = call.receive<Post>()
+//                call.respond(getSnackStockByID(payload.snackID))
+//            }
+//            // Get the name of a snack
+//            post("/getSnackName") {
+//                val payload = call.receive<Post>()
+//                call.respond(getSnackNameByID(payload.snackID))
+//            }
+//            // Get the price of a snack
+//            post("/getSnackPrice") {
+//                val payload = call.receive<Post>()
+//                call.respond(getSnackPriceByID(payload.snackID))
+//            }
+//            // Get snackID by name
+//            post("/getSnackID") {
+//                val payload = call.receive<Post>()
+//                call.respond(getsnackIDByName(payload.name))
+//            }
+//
+//            // Buy a snack (reduct 1 from snackstock)
+//            post("/buySnack") {
+//                val payload = call.receive<Buy>()
+//                call.respond(buySnackByID(payload.userID, payload.snackID))
+//            }
+//            // Refill the stofk of a snack
+//            post("/refillSnackStock") {
+//                val payload = call.receive<Refill>()
+//                call.respond(refillSnackStock(payload.snackID, payload.refill))
+//            }
 
             static("/static") {
                 resource("xi_kotlin.js")

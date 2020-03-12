@@ -17,7 +17,7 @@ class VendingMachineTemplate : Template<HTML> {
                 div {
                     id = "ktor-request"
                 }
-                div {
+                h4 {
                     id = "selected-user"
                     +"Selected user : ${selectedUser.name}"
                 }
