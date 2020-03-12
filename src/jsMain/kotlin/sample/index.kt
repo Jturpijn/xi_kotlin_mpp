@@ -14,7 +14,8 @@ fun log(message: String) {
         document.getElementById("logs")!!.outerHTML = " "
         document.getElementById("container")!!.appendChild(document.create.div { id = "logs" })
     }
-    for (log in logs.asReversed()) {
+    for ((index, log) in logs.asReversed().withIndex()) {
+        if(index > 20) break
         document.getElementById("logs")!!.appendChild(document.create.p {
             id = "log"
             +log
@@ -70,7 +71,9 @@ fun main() {
     val actionButtons = document.create.div {
         button {
             +"Show Stock"; onClickFunction = { _ ->
-            log("the store : $snackStore")
+            for(snack in snackStore.snacks.asReversed()) {
+                log("ID: ${snack.ID} | ${snack.name} | #${snack.stock} | €${snack.price}")
+            }
         }
         }
         button {
