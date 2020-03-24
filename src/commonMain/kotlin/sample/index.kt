@@ -18,17 +18,18 @@ interface Action {
     val type: ActionType
 }
 data class snackAction(
-    override val type: ActionType,
-    val snack: Snack,
-    var snackIdentifier: String
+    override val type: ActionType
 ): Action
 data class userAction(
     override val type: ActionType,
     val user: User = selectedUser
 ): Action
-
-enum class ActionType { buy, refill }
-
+enum class ActionType {
+    buyMars,
+    buyTwix,
+    buyBounty,
+    refill
+}
 // Stores
 data class SnackStore (
     val snacks: List<Snack>,

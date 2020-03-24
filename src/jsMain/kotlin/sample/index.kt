@@ -1,11 +1,13 @@
 package sample
 
-import kotlinx.coroutines.*
 import kotlin.browser.*
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.*
-import sample.sagas.buySnack
+import sample.reducers.Reducer
+import sample.reducers.snackReducer
+import sample.reducers.userReducer
+import kotlin.reflect.KFunction
 
 val logs = mutableListOf<String>()
 fun log(message: String) {
@@ -23,26 +25,39 @@ fun log(message: String) {
     }
 }
 
-// Channel
-fun actionWatcher() = GlobalScope.launch {
-    while (true) {
-        for (action in reducerChannel) {
-            log("dispatched $action")
-            if(action.type == ActionType.buy) launch { buySnack(action.unsafeCast<snackAction>()) }
+
+class Store(reducer: Reducer, state: List<*>) {
+    private var currentState = state
+    private var currentReducer = reducer //{action: Action -> Any()}
+    private var isDispatching = false
+
+    fun getState(): Any {
+        return currentState
+    }
+
+    fun dispatch(action:Action) {
+        if (isDispatching) log("Reducers cannot dispatch while another action is dispatching.")
+
+        try {
+            println("Trying to dispatch : $action on $currentState through $currentReducer")
+            isDispatching = true
+            currentState = currentReducer.call(currentState, action)
+        } finally {
+            isDispatching = false
         }
     }
+
+}
+fun <Reducer, Any> createStore(reducer: sample.reducers.Reducer, state: List<*>): Store {
+    return Store(reducer = reducer, state = state)
 }
 
-fun dispatch(action: Action) = GlobalScope.launch {
-    log("dispatching $action")
-    reducerChannel.send(action)
-}
 
 fun main() {
-    actionWatcher()
+    val store = createStore<Reducer, List<*>>(snackReducer(), snackStore.snacks)
+    log("${store.getState()}")
     val userButtons = document.create.div {
         button {
-            type = ButtonType.submit
             +"Top up Balance with 10"; onClickFunction = { _ ->
             selectedUser.balance += 10
             log("Succesfully topped up ${selectedUser.name}'s balance. Balance is now €${selectedUser.balance}")
@@ -59,12 +74,11 @@ fun main() {
         }
     }
     val snackButtons = document.create.div {
-        var counter= 0
         for (snack in snackStore.snacks) {
             button {
                 id = "${snack.ID}"
                 +"buy a ${snack.name}"; onClickFunction = { _ ->
-                dispatch(snackAction(ActionType.buy, snack, "${counter++}${snack.name}"))
+                store.dispatch(snackAction(ActionType.buyMars))
             }
             }
         }
@@ -72,7 +86,8 @@ fun main() {
     val actionButtons = document.create.div {
         button {
             +"Show Stock"; onClickFunction = { _ ->
-            for(snack in snackStore.snacks.asReversed()) {
+            var snacks: List<Snack> = store.getState() as List<Snack>
+            for(snack in snacks.asReversed()) {
                 log("ID: ${snack.ID} | ${snack.name} \t | #${snack.stock} | €${snack.price}")
             }
         }
@@ -84,7 +99,7 @@ fun main() {
         }
         button {
             +"Refill all snacks"; onClickFunction = { _ ->
-            dispatch(userAction(ActionType.refill))
+//            store.dispatch(snackAction(ActionType.refill))
         }
         }
     }
