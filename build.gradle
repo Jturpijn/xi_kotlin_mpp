@@ -72,7 +72,7 @@ jvmJar {
 
 task run(type: JavaExec, dependsOn: [jvmJar]) {
     group = "application"
-    main = "sample.SampleJvmKt"
+    main = "xi_kotlinJVM.XiJvmKt"
     classpath(configurations.jvmRuntimeClasspath, jvmJar)
     args = []
 }

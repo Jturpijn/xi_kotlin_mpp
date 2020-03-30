@@ -1,7 +1,6 @@
-package sample
+package xi_kotlinJS
 
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 class SampleTestsJS {
     @Test

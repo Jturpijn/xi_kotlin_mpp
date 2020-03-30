@@ -1,7 +1,8 @@
-package sample
+package xi_kotlinJVM
 
 import io.ktor.html.Template
 import kotlinx.html.*
+import xi_kotlin.selectedUser
 
 class VendingMachineTemplate : Template<HTML> {
     override fun HTML.apply() {

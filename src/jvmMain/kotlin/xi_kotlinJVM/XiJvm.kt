@@ -1,4 +1,4 @@
-package sample
+package xi_kotlinJVM
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -8,12 +8,9 @@ import io.ktor.gson.gson
 import io.ktor.html.*
 import io.ktor.http.content.*
 import io.ktor.jackson.jackson
-import io.ktor.request.receive
-import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import kotlinx.coroutines.launch
 
 data class Post(val snackID: Int,
                 val name: String
@@ -41,10 +38,10 @@ fun main() {
                 call.respondHtmlTemplate(VendingMachineTemplate()) {
                 }
             }
-            // Get the entire store.
-            get("/getStore") {
-                call.respond(snackStore)
-            }
+//            // Get the entire store.
+//            get("/getStore") {
+//                call.respond(snackStore)
+//            }
 //            // Get the stock of a snack
 //            post("/checkSnack") {
 //                val payload = call.receive<Post>()
