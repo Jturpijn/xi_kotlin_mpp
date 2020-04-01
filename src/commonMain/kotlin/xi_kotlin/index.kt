@@ -34,7 +34,7 @@ object refill : Action()
 typealias Reducer<S, A> = (S, A) -> S
 typealias Listener = suspend () -> Unit
 
-class Store<S, A>(private val reducer: Reducer<S, A>, initialState: S) {
+class Store<S, A>(reducer: Reducer<S, A>, initialState: S) {
     private var currentReducer = reducer
     private var currentState = initialState
     private var isDispatching = false
@@ -60,12 +60,13 @@ class Store<S, A>(private val reducer: Reducer<S, A>, initialState: S) {
 
         for(listener in listeners) {
             GlobalScope.launch { listener() }
+            println("launched a boi")
         }
     }
 
 }
 
-// Global data
+// Global initial data
 var snackID = 0
 var selectedSnack = Snack(99,99,99, "Non-existant")
 val selectedUser = User(1, "henk", 50)

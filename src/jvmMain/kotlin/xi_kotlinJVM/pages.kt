@@ -12,15 +12,9 @@ class VendingMachineTemplate : Template<HTML> {
         body {
             div {
                 id = "container"
+                +"Selected user : ${selectedUser.name}"
                 div {
                     id = "users"
-                }
-                div {
-                    id = "ktor-request"
-                }
-                h4 {
-                    id = "selected-user"
-                    +"Selected user : ${selectedUser.name}"
                 }
                 div {
                     id = "logs"
