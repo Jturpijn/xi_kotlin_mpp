@@ -6,6 +6,7 @@ import kotlinx.html.dom.create
 import kotlinx.html.js.*
 import xi_kotlinJS.reducers.snackReducer
 import xi_kotlin.*
+import xi_kotlinJS.Coroutines.snackRoutine
 
 // Generating Initial state
 class state(
@@ -20,6 +21,7 @@ class state(
 fun main() {
     //initial store
     val store = Store(snackReducer, state())
+    store.subscribe { snackRoutine() }
 
     //create User Interface
     val userButtons = document.create.div {

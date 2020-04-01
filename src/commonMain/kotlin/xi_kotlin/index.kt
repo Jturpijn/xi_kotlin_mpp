@@ -1,5 +1,10 @@
 package xi_kotlin
 
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+
 // Data
 data class Snack(
     val ID: Int,
@@ -27,15 +32,35 @@ object refill : Action()
 
 // Generics
 typealias Reducer<S, A> = (S, A) -> S
+typealias Listener = suspend () -> Unit
+
 class Store<S, A>(private val reducer: Reducer<S, A>, initialState: S) {
-    var currentState = initialState
+    private var currentReducer = reducer
+    private var currentState = initialState
+    private var isDispatching = false
+    private var listeners: MutableList<Listener> = mutableListOf<Listener>()
+
 
     fun getState(): S {
         return currentState
     }
 
+    fun subscribe(listener:Listener) {
+        if(isDispatching) { throw Error("You may not subscribe when the store is dispatching.") }
+        listeners.apply { this.add(listener)}
+    }
+
     fun dispatch(action: A) {
-        this.currentState = this.reducer(currentState, action)
+        try {
+            isDispatching = true
+            currentState = currentReducer(currentState, action)
+        } finally {
+            isDispatching = false
+        }
+
+        for(listener in listeners) {
+            GlobalScope.launch { listener() }
+        }
     }
 
 }
