@@ -1,8 +1,6 @@
 package xi_kotlin
 
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 // Data
@@ -20,51 +18,12 @@ data class User(
 
 // Actions
 sealed class Action
-class addSnack(price: Int, stock: Int, name: String): Action() {
+class addSnack(val price: Int, val stock: Int, val name: String): Action() {
     val ID = ++snackID
-    val price = price
-    val stock = stock
-    val name = name
-
 }
 object buySnack : Action()
 object refill : Action()
 
-// Generics
-typealias Reducer<S, A> = (S, A) -> S
-typealias Listener = suspend () -> Unit
-
-class Store<S, A>(reducer: Reducer<S, A>, initialState: S) {
-    private var currentReducer = reducer
-    private var currentState = initialState
-    private var isDispatching = false
-    private var listeners: MutableList<Listener> = mutableListOf<Listener>()
-
-
-    fun getState(): S {
-        return currentState
-    }
-
-    fun subscribe(listener:Listener) {
-        if(isDispatching) { throw Error("You may not subscribe when the store is dispatching.") }
-        listeners.apply { this.add(listener)}
-    }
-
-    fun dispatch(action: A) {
-        try {
-            isDispatching = true
-            currentState = currentReducer(currentState, action)
-        } finally {
-            isDispatching = false
-        }
-
-        for(listener in listeners) {
-            GlobalScope.launch { listener() }
-            println("launched a boi")
-        }
-    }
-
-}
 
 // Global initial data
 var snackID = 0

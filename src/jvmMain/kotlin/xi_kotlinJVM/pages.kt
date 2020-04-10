@@ -14,6 +14,9 @@ class VendingMachineTemplate : Template<HTML> {
                 id = "container"
                 +"Selected user : ${selectedUser.name}"
                 div {
+                    id = "actions"
+                }
+                div {
                     id = "users"
                 }
                 div {
